@@ -8,10 +8,7 @@ MAINTAINER Chris Snell, chris.snell@revinate.com
 RUN apt-get update
 
 # Install memcached
-RUN apt-get install -y memcached
-
-# Install netcat (used for testing memcache)
-RUN apt-get install -y netcat
+RUN apt-get install -y memcached=1.4.13-0ubuntu2
 
 # Start up memcached in daemon mode, allocating 4000 MB of memory
 ENTRYPOINT ["memcached", "-u", "nobody", "-m", "4000", "logfile", "/var/log/memcached.log"]
