@@ -36,12 +36,17 @@ check_root_id ()
 case "$1" in
 	start)
 		check_root_id || exit 1
-		log_begin_msg "Starting memcached container..."
-                IP=`ifconfig $LISTEN_IFACE | awk -F':' '/inet addr/&&!/127.0.0.1/{split($2,_," ");print _[1]}'`
-                # Map port 11211 from the LISTEN_FACE to port 11211 on container
-                CONTAINER_ID=`$DOCKER run -d -p ${IP}:11211:11211 $MEMCACHED_IMAGE`
-                `echo $CONTAINER_ID > $CONTAINER_PID`
-		log_end_msg $?
+                $DOCKER ps > /dev/null 2>&1
+                if [ $? -ne 0 ]; then
+                    log_failure_msg "Docker is not running"; exit 1
+                else
+   		    log_begin_msg "Starting memcached container..."
+                    IP=`ifconfig $LISTEN_IFACE | awk -F':' '/inet addr/&&!/127.0.0.1/{split($2,_," ");print _[1]}'`
+                    # Map port 11211 from the LISTEN_FACE to port 11211 on container
+                    CONTAINER_ID=`$DOCKER run -d -p ${IP}:11211:11211 $MEMCACHED_IMAGE`
+                    `echo $CONTAINER_ID > $CONTAINER_PID`
+		    log_end_msg $?
+                fi
 		;;
 
 	stop)
